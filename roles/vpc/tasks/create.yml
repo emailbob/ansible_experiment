@@ -15,9 +15,9 @@
     state: present
     region: "{{ aws_region }}"
     vpc_id: "{{ vpc.vpc.id }}"
-    cidr: "{{ subnet_cidr }}"
+    cidr: "{{ vpc_subnet_cidr }}"
     tags:
-      Name: ansible_public_subnet
+      Name: "{{ vpc_subnet_name }}"
       Createdby: ansible
   register: public_subnet
 
@@ -34,7 +34,7 @@
     vpc_id: "{{ vpc.vpc.id }}"
     region: "{{ aws_region }}"
     tags:
-      Name: ansible_public_rt
+      Name: "{{ vpc_rt_name }}"
       Createdby: ansible
     subnets:
       - "{{ public_subnet.subnet.id }}"

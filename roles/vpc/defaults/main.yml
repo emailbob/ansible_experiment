@@ -1,5 +1,7 @@
 ---
 # defaults file for vpc
 vpc_name: ansible_vpc
+vpc_rt_name: ansible_public_rt
+vpc_subnet_name: ansible_public_subnet
 vpc_cidr: 10.10.0.0/16
-subnet_cidr: 10.10.10.0/24
+vpc_subnet_cidr: 10.10.10.0/24

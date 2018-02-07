@@ -1,43 +1,43 @@
 - ec2_vpc_net_facts:
     region: "{{ aws_region }}"
     filters:
-      "tag:Name": ansible_vpc
+      "tag:Name": "{{ vpc_name }}"
   register: vpc    
 
-# This module removes by tags
 - name: Remove public subnet route table
   ec2_vpc_route_table:
     state: absent
     region: "{{ aws_region }}"
-    vpc_id: "{{ vpc.vpcs[0].id }}"
+    vpc_id: "{{ item.id }}"
     tags:
-      Name: Public
+      Name: "{{ vpc_rt_name }}"
       Createdby: ansible
-  when: vpc.vpcs[0] is defined    
+  with_items: "{{ vpc.vpcs }}"    
 
 - name: Remove Internet gateway
   ec2_vpc_igw:
     state: absent
     region: "{{ aws_region }}"
-    vpc_id: "{{ vpc.vpcs[0].id }}"
-  when: vpc.vpcs[0] is defined
+    vpc_id: "{{ item.id }}"
+  with_items: "{{ vpc.vpcs }}"  
 
 - name: Remove public subnet
   ec2_vpc_subnet:
     state: absent
     region: "{{ aws_region }}"
-    cidr: "{{ subnet_cidr }}"
-    vpc_id: "{{ vpc.vpcs[0].id }}"
-  when: vpc.vpcs[0] is defined  
+    cidr: "{{ vpc_subnet_cidr }}"
+    vpc_id: "{{ item.id }}"
+    tags:
+      Name: "{{ vpc_subnet_name }}"
+      Createdby: ansible
+  with_items: "{{ vpc.vpcs }}"    
 
-- name: Remove a VPC
+- name: Remove VPC
   ec2_vpc_net:
     name: "{{ vpc_name }}"
     state: absent
     region: "{{ aws_region }}"
-    cidr_block: "{{ vpc_cidr }}"
-  when: vpc.vpcs[0] is defined  
+    cidr_block: "{{ vpc_cidr }}"   
 
-- debug: msg="VPC {{ vpc.vpcs[0].id }} Removed"
-  when: vpc.vpcs[0] is defined
-  
+- debug: msg="VPC {{ item.id }} Removed"
+  with_items: "{{ vpc.vpcs }}"
