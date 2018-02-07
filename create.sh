@@ -20,13 +20,6 @@ else
   exit 1
 fi
 
-# echo
-# echo "================================"
-# echo " Create ssh key"
-# echo "================================"
-# echo 
-#ssh-keygen -t rsa -b 4096 -f tmp_rsa -N ""
-
 echo
 echo "================================"
 echo " Run Ansible Playbook"

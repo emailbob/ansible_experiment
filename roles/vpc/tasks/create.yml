@@ -10,16 +10,9 @@
       Createdby: ansible
   register: vpc    
 
-# - debug:
-#     msg: "{{ vpc }}"
-
-# - meta: end_play
-# - fail:
-
 - name: Create public subnet
   ec2_vpc_subnet:
     state: present
-    # az: "{{ az }}"
     region: "{{ aws_region }}"
     vpc_id: "{{ vpc.vpc.id }}"
     cidr: "{{ subnet_cidr }}"
@@ -32,10 +25,7 @@
   ec2_vpc_igw:
     state: present
     vpc_id: "{{ vpc.vpc.id }}"
-    region: "{{ aws_region }}"
-    # tags:
-    #   name: ansible_igw
-    #   createdby: Ansible  
+    region: "{{ aws_region }}" 
   register: igw
 
 - name: Set up public subnet route table

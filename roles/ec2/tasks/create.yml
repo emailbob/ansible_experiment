@@ -37,7 +37,19 @@
       to_port: 443
       cidr_ip: 0.0.0.0/0
 
-- name: Create Instance
+- name: Does EC2 instance already exist
+  connection: local
+  ec2_remote_facts:
+    filters:
+      instance-state-name: [ 'running', 'stopped', 'starting' ]
+      "tag:Name": "{{ ec2_instance_name }}"
+    region: "{{ aws_region }}"
+  register: ec2_exist
+
+- debug:
+    msg: "{{ ec2_exist }}"
+
+- name: Create EC2 instance
   connection: local
   ec2:
     key_name: "{{ ec2_aws_key_name }}"
@@ -54,6 +66,7 @@
     wait: yes
     user_data: "{{ lookup('file', 'roles/ec2/files/coreos_user_data') }}"
   register: ec2  
+  when: ec2_exist.instances[0] is not defined
 
 - name: Wait for web application to be up
   wait_for:
@@ -63,17 +76,32 @@
     timeout: 180
     state: started
   with_items: "{{ ec2.instances }}"
+  when: ec2_exist.instances[0] is not defined
 
-- name: Output
-  debug: msg="Access web application using http://{{ item.public_dns_name }} or http://{{ item.public_ip }}"
+- set_fact: 
+    dns_name="{{ item.public_dns_name }}"
+    public_ip="{{ item.public_ip_address }}"
+  with_items: "{{ ec2_exist.instances }}"
+  when: ec2_exist.instances[0] is defined
+
+- set_fact: 
+    dns_name="{{ item.public_dns_name }}"
+    public_ip="{{ item.public_ip }}"
   with_items: "{{ ec2.instances }}"
+  when: ec2_exist.instances[0] is not defined
 
-# - debug:
-#     msg: "Access web app using http://{{ item.public_dns_name }} or"
-#     with_items: "{{ ec2.instances }}"  
+# - debug: 
+#     msg: "Access web application using http://{{ item.public_dns_name }} or http://{{ item.public_ip }}"
+#   with_items: "{{ ec2.instances }}"
+#   when: ec2_exist.instances[0] is not defined
 
-# - debug:
-#     msg: "Access web app using http://{{ item.public_ip }} or"
-#     with_items: "{{ ec2.instances }}" 
+# - name: Post Output
+#   debug: 
+#     msg: "Access web application using"
+#       - "http://{{ dns_name }}"
+#       - "http://{{ public_ip }}"
+#   when: ec2_exist.instances[0] is defined
 
- 
+- name: Post Output
+  debug: 
+    msg: "Access web application using http://{{ dns_name }} or http://{{ public_ip }}" 
