@@ -7,9 +7,6 @@
     region: "{{ aws_region }}"
   register: ec2_key
   
-# - debug:
-#     msg: "{{ ec2_key }}"
-
 - name: Save private key
   copy:
     content: "{{ ec2_key.key.private_key }}" 
@@ -46,9 +43,6 @@
     region: "{{ aws_region }}"
   register: ec2_exist
 
-- debug:
-    msg: "{{ ec2_exist }}"
-
 - name: Create EC2 instance
   connection: local
   ec2:
@@ -78,30 +72,21 @@
   with_items: "{{ ec2.instances }}"
   when: ec2_exist.instances[0] is not defined
 
+# Get facts for existing instance
 - set_fact: 
     dns_name="{{ item.public_dns_name }}"
     public_ip="{{ item.public_ip_address }}"
   with_items: "{{ ec2_exist.instances }}"
   when: ec2_exist.instances[0] is defined
 
+# Get facts for new instance
 - set_fact: 
     dns_name="{{ item.public_dns_name }}"
     public_ip="{{ item.public_ip }}"
   with_items: "{{ ec2.instances }}"
   when: ec2_exist.instances[0] is not defined
 
-# - debug: 
-#     msg: "Access web application using http://{{ item.public_dns_name }} or http://{{ item.public_ip }}"
-#   with_items: "{{ ec2.instances }}"
-#   when: ec2_exist.instances[0] is not defined
+- debug: msg="EC2 instance already exists"
+  when: ec2_exist.instances[0] is defined
 
-# - name: Post Output
-#   debug: 
-#     msg: "Access web application using"
-#       - "http://{{ dns_name }}"
-#       - "http://{{ public_ip }}"
-#   when: ec2_exist.instances[0] is defined
-
-- name: Post Output
-  debug: 
-    msg: "Access web application using http://{{ dns_name }} or http://{{ public_ip }}" 
+- debug: msg="Access web application using http://{{ dns_name }} or http://{{ public_ip }}"
