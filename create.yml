@@ -5,37 +5,7 @@
   gather_facts: no
   vars:
     aws_region: us-west-1
-    #ami_id: ami-824c4ee2 #Amazon Linux AMI 2017.09.1
     ami_id: ami-35555a55 #CoreOS-stable-1632.2.1-hvm
   roles:
     - vpc
-    - ec2
-
-# - name: Setup EC2 instance
-#   hosts: ec2host
-#   user: core
-#   gather_facts: true
-#   become: true
-#   # vars:
-#   #   ansible_ssh_private_key_file: ansible_tmp_rsa
-#   tasks:
-#     - name: Start Docker
-#       systemd:
-#         name: docker
-#         enabled: yes
-#         state: started
-
-#     - name: Place Jenkins systemd unit file
-#       copy: 
-#         src: jenkins.service
-#         dest: /etc/systemd/system/
-#         owner: root 
-#         group: root 
-#         mode: 0755
-
-#     - name: Start Jenkins
-#       systemd:
-#         name: jenkins
-#         enabled: yes
-#         daemon_reload: yes
-#         state: started         
+    - ec2        
