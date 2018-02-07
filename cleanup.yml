@@ -4,7 +4,7 @@
   connection: local
   gather_facts: no
   vars:
-    aws_region: us-west-1
+    aws_region: eu-central-1
   roles:
     - ec2
     - vpc

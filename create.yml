@@ -4,8 +4,8 @@
   connection: local
   gather_facts: no
   vars:
-    aws_region: us-west-1
-    ami_id: ami-35555a55 #CoreOS-stable-1632.2.1-hvm
+    aws_region: eu-central-1
+    ami_id: ami-4354ce2c #CoreOS-stable-1632.2.1-hvm
   roles:
     - vpc
     - ec2        
