@@ -1,0 +1,61 @@
+- ec2_vpc_net_facts:
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Name": ansible_vpc
+  register: vpc    
+
+# - debug:
+#     msg: "{{ vpc }}"
+
+# - debug:
+#     msg: "{{ vpc.vpcs[0].id }}"
+
+# This module removes by tags
+- name: Remove public subnet route table
+  ec2_vpc_route_table:
+    state: absent
+    region: "{{ aws_region }}"
+    vpc_id: "{{ vpc.vpcs[0].id }}"
+    tags:
+      Name: Public
+      Createdby: ansible
+  when: vpc.vpcs[0] is defined    
+  # tags:
+  #   - cleanup
+
+- name: Remove Internet gateway
+  ec2_vpc_igw:
+    state: absent
+    region: "{{ aws_region }}"
+    vpc_id: "{{ vpc.vpcs[0].id }}"
+  when: vpc.vpcs[0] is defined
+  # tags:
+  #   - cleanup
+
+- name: Remove public subnet
+  ec2_vpc_subnet:
+    state: absent
+    region: "{{ aws_region }}"
+    cidr: "{{ subnet_cidr }}"
+    vpc_id: "{{ vpc.vpcs[0].id }}"
+  when: vpc.vpcs[0] is defined  
+  # tags:
+  #   - cleanup
+
+- name: Remove a VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    state: absent
+    region: "{{ aws_region }}"
+    cidr_block: "{{ vpc_cidr }}"
+  when: vpc.vpcs[0] is defined  
+  # tags:
+  #   - cleanup
+
+- debug: msg="VPC {{ vpc.vpcs[0].id }} Removed"
+  when: vpc.vpcs[0] is defined
+  # tags:
+  #   - cleanup
+
+# Exit without throwing an error
+# - meta: end_play

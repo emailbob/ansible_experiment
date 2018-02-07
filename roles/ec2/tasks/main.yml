@@ -1,0 +1,10 @@
+---
+# tasks file for ec2
+
+- include: create.yml
+  tags:
+    - create
+
+- include: cleanup.yml
+  tags:
+    - cleanup    

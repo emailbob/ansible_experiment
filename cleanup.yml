@@ -1,0 +1,11 @@
+---
+- name: Cleanup
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    aws_region: us-west-1
+  roles:
+    - ec2
+    - vpc
+    

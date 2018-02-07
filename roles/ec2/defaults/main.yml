@@ -1,0 +1,5 @@
+---
+# defaults file for ec2
+ec2_aws_key_name: ansible_tmp_rsa
+ec2_instance_name: ansible_test_instance
+ec2_security_group: ansible_security

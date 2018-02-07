@@ -1,0 +1,13 @@
+---
+# - include: cleanup.yml
+#   when: cleanup is defined and cleanup == 'true'
+
+- include: create.yml
+  tags:
+    - create
+
+- include: cleanup.yml
+  tags:
+    - cleanup    
+
+
